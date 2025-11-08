@@ -6,79 +6,26 @@ import { eq, like, and } from 'drizzle-orm';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, semester, fileUrl, fileType, uploadedBy } = body;
+    const { userId, title, subjectName, semester, fileUrl, fileType, description } = body;
 
-    // Validate title
-    if (!title || typeof title !== 'string' || title.trim() === '') {
+    // Validate required fields
+    if (!userId || !title || !subjectName || !semester || !fileUrl || !fileType) {
       return NextResponse.json(
         { 
-          error: 'Title is required and cannot be empty',
-          code: 'MISSING_TITLE'
+          error: 'All required fields must be provided: userId, title, subjectName, semester, fileUrl, fileType',
+          code: 'MISSING_REQUIRED_FIELDS'
         },
         { status: 400 }
       );
     }
 
-    // Validate semester
-    if (!semester || typeof semester !== 'number' || !Number.isInteger(semester)) {
+    // Validate userId is integer
+    const parsedUserId = parseInt(userId);
+    if (isNaN(parsedUserId)) {
       return NextResponse.json(
         { 
-          error: 'Semester must be a valid integer',
-          code: 'INVALID_SEMESTER_TYPE'
-        },
-        { status: 400 }
-      );
-    }
-
-    if (semester < 1 || semester > 8) {
-      return NextResponse.json(
-        { 
-          error: 'Semester must be between 1 and 8',
-          code: 'INVALID_SEMESTER_RANGE'
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate fileUrl
-    if (!fileUrl || typeof fileUrl !== 'string' || fileUrl.trim() === '') {
-      return NextResponse.json(
-        { 
-          error: 'File URL is required and cannot be empty',
-          code: 'MISSING_FILE_URL'
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate fileType
-    if (!fileType || typeof fileType !== 'string') {
-      return NextResponse.json(
-        { 
-          error: 'File type is required',
-          code: 'MISSING_FILE_TYPE'
-        },
-        { status: 400 }
-      );
-    }
-
-    const normalizedFileType = fileType.trim().toLowerCase();
-    if (normalizedFileType !== 'pdf' && normalizedFileType !== 'docx') {
-      return NextResponse.json(
-        { 
-          error: 'File type must be either "pdf" or "docx"',
-          code: 'INVALID_FILE_TYPE'
-        },
-        { status: 400 }
-      );
-    }
-
-    // Validate uploadedBy
-    if (!uploadedBy || typeof uploadedBy !== 'number' || !Number.isInteger(uploadedBy)) {
-      return NextResponse.json(
-        { 
-          error: 'Uploaded by must be a valid user ID',
-          code: 'INVALID_UPLOADED_BY'
+          error: 'User ID must be a valid integer',
+          code: 'INVALID_USER_ID'
         },
         { status: 400 }
       );
@@ -87,7 +34,7 @@ export async function POST(request: NextRequest) {
     // Verify user exists
     const userExists = await db.select()
       .from(users)
-      .where(eq(users.id, uploadedBy))
+      .where(eq(users.id, parsedUserId))
       .limit(1);
 
     if (userExists.length === 0) {
@@ -100,15 +47,80 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate title
+    if (typeof title !== 'string' || title.trim() === '') {
+      return NextResponse.json(
+        { 
+          error: 'Title is required and cannot be empty',
+          code: 'INVALID_TITLE'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate subjectName
+    if (typeof subjectName !== 'string' || subjectName.trim() === '') {
+      return NextResponse.json(
+        { 
+          error: 'Subject name is required and cannot be empty',
+          code: 'INVALID_SUBJECT_NAME'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate semester
+    const parsedSemester = parseInt(semester);
+    if (isNaN(parsedSemester) || parsedSemester < 1 || parsedSemester > 8) {
+      return NextResponse.json(
+        { 
+          error: 'Semester must be a valid integer between 1 and 8',
+          code: 'INVALID_SEMESTER'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate fileUrl
+    if (typeof fileUrl !== 'string' || fileUrl.trim() === '') {
+      return NextResponse.json(
+        { 
+          error: 'File URL is required and cannot be empty',
+          code: 'INVALID_FILE_URL'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate fileType
+    const normalizedFileType = fileType.trim().toLowerCase();
+    if (normalizedFileType !== 'pdf' && normalizedFileType !== 'docx') {
+      return NextResponse.json(
+        { 
+          error: 'File type must be either "pdf" or "docx"',
+          code: 'INVALID_FILE_TYPE'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create timestamp
+    const timestamp = new Date().toISOString();
+
     // Create new note
     const newNote = await db.insert(notes)
       .values({
+        userId: parsedUserId,
         title: title.trim(),
-        semester: semester,
+        subjectName: subjectName.trim(),
+        semester: parsedSemester,
         fileUrl: fileUrl.trim(),
         fileType: normalizedFileType,
-        uploadedBy: uploadedBy,
-        createdAt: new Date().toISOString()
+        description: description ? description.trim() : null,
+        viewsCount: 0,
+        downloadsCount: 0,
+        createdAt: timestamp,
+        updatedAt: timestamp
       })
       .returning();
 
@@ -129,7 +141,7 @@ export async function GET(request: NextRequest) {
     
     // Parse query parameters
     const semesterParam = searchParams.get('semester');
-    const subjectParam = searchParams.get('subject');
+    const subjectParam = searchParams.get('subject_name');
     const limitParam = searchParams.get('limit');
     const offsetParam = searchParams.get('offset');
 
@@ -195,7 +207,7 @@ export async function GET(request: NextRequest) {
 
     // Add subject search filter if provided
     if (subjectParam && subjectParam.trim() !== '') {
-      conditions.push(like(notes.title, `%${subjectParam.trim()}%`));
+      conditions.push(like(notes.subjectName, `%${subjectParam.trim()}%`));
     }
 
     // Build and execute query
