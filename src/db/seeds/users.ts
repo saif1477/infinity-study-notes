@@ -19,13 +19,13 @@ async function main() {
             email: 'arjun.kumar@gitam.in',
             name: 'Arjun Kumar',
             role: 'student',
-            createdAt: new Date('2024-09-10').toISOString(),
+            createdAt: new Date('2024-09-15').toISOString(),
         },
         {
             email: 'sneha.reddy@gitam.in',
             name: 'Sneha Reddy',
             role: 'student',
-            createdAt: new Date('2024-10-05').toISOString(),
+            createdAt: new Date('2024-10-01').toISOString(),
         },
         {
             email: 'vikram.singh@gitam.in',
@@ -37,7 +37,7 @@ async function main() {
             email: 'ananya.iyer@gitam.in',
             name: 'Ananya Iyer',
             role: 'student',
-            createdAt: new Date('2024-11-08').toISOString(),
+            createdAt: new Date('2024-11-05').toISOString(),
         },
         {
             email: 'ramesh.gupta@gitam.in',
@@ -49,7 +49,7 @@ async function main() {
             email: 'lakshmi.devi@gitam.in',
             name: 'Prof. Lakshmi Devi',
             role: 'professor',
-            createdAt: new Date('2024-08-05').toISOString(),
+            createdAt: new Date('2024-08-10').toISOString(),
         }
     ];
 
