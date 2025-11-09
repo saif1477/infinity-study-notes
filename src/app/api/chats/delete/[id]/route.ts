@@ -10,13 +10,13 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    // Parse body with error handling
+    // Parse body
     let body;
     try {
-      const text = await request.text();
-      body = text ? JSON.parse(text) : {};
+      body = await request.json();
       console.log('Parsed body:', body);
     } catch (e) {
+      console.error('JSON parse error:', e);
       return NextResponse.json(
         {
           error: 'Invalid JSON body',
