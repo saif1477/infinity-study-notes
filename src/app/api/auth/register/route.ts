@@ -79,23 +79,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate email ends with @gitam.in
-    if (!trimmedEmail.endsWith('@gitam.in')) {
-      return NextResponse.json(
-        { 
-          error: 'Email must be a valid GITAM university email (@gitam.in)',
-          code: 'INVALID_GITAM_EMAIL'
-        },
-        { status: 400 }
-      );
-    }
-
     // Validate role is either 'student' or 'professor'
     if (trimmedRole !== 'student' && trimmedRole !== 'professor') {
       return NextResponse.json(
         { 
           error: 'Role must be either "student" or "professor"',
           code: 'INVALID_ROLE_VALUE'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate email based on role
+    if (trimmedRole === 'student' && !trimmedEmail.endsWith('@student.gitam.edu')) {
+      return NextResponse.json(
+        { 
+          error: 'Student email must end with @student.gitam.edu',
+          code: 'INVALID_STUDENT_EMAIL'
+        },
+        { status: 400 }
+      );
+    }
+
+    if (trimmedRole === 'professor' && !trimmedEmail.endsWith('@gitam.edu')) {
+      return NextResponse.json(
+        { 
+          error: 'Professor email must end with @gitam.edu',
+          code: 'INVALID_PROFESSOR_EMAIL'
         },
         { status: 400 }
       );
