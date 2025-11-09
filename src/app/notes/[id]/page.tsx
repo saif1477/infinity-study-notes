@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ArrowLeft, Send, Download, Eye, FileText, Home } from "lucide-react";
+import { ArrowLeft, Send, Download, Eye, FileText, Home, Trash2 } from "lucide-react";
 
 interface Note {
   id: number;
@@ -129,6 +129,36 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
     }
   };
 
+  const handleDeleteMessage = async (messageId: number) => {
+    if (!user) return;
+
+    try {
+      const res = await fetch(`/api/chats/${messageId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Message deleted");
+        loadMessages();
+      } else {
+        toast.error(data.error || "Failed to delete message");
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+    }
+  };
+
+  const canDeleteMessage = (messageCreatedAt: string) => {
+    const messageTime = new Date(messageCreatedAt).getTime();
+    const currentTime = new Date().getTime();
+    const fifteenMinutesInMs = 15 * 60 * 1000;
+    return currentTime - messageTime <= fifteenMinutesInMs;
+  };
+
   const handleDownload = async () => {
     if (!note) return;
     try {
@@ -239,9 +269,20 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
                       }`}
                     >
                       <p className="text-sm">{msg.message}</p>
-                      <p className="mt-1 text-xs opacity-70">
-                        {new Date(msg.createdAt).toLocaleString()}
-                      </p>
+                      <div className="mt-1 flex items-center justify-between gap-2">
+                        <p className="text-xs opacity-70">
+                          {new Date(msg.createdAt).toLocaleString()}
+                        </p>
+                        {msg.senderId === user?.id && canDeleteMessage(msg.createdAt) && (
+                          <button
+                            onClick={() => handleDeleteMessage(msg.id)}
+                            className="text-xs opacity-70 hover:opacity-100 transition-opacity"
+                            title="Delete message"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))
