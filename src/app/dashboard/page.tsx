@@ -231,12 +231,8 @@ export default function DashboardPage() {
 
                 <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
-                    <Eye className="h-3 w-3" />
-                    {note.viewsCount}
-                  </div>
-                  <div className="flex items-center gap-1">
                     <Download className="h-3 w-3" />
-                    {note.downloadsCount}
+                    {note.downloadsCount} downloads
                   </div>
                 </div>
 
