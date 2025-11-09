@@ -1,5 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FileText, UploadCloud, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -14,24 +16,19 @@ export default function Home() {
             GITAM Notes Hub
           </h1>
           <p className="mt-4 max-w-2xl text-pretty text-muted-foreground">
-            Upload, browse, and discuss course notes. Built with Next.js 15, Tailwind, and shadcn/ui.
+            Upload, browse, and discuss course notes with your classmates. Built for GITAM University students and professors.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
-              className="inline-flex h-11 items-center justify-center rounded-md bg-foreground px-5 text-background transition-colors hover:opacity-90"
-              href="/api/notes"
-              rel="noopener noreferrer"
-            >
-              Browse Notes (API)
-            </a>
-            <a
-              className="inline-flex h-11 items-center justify-center rounded-md border border-border px-5 text-foreground hover:bg-accent"
-              href="https://nextjs.org/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Documentation
-            </a>
+            <Link href="/login">
+              <Button size="lg">
+                Get Started
+              </Button>
+            </Link>
+            <Link href="/register">
+              <Button size="lg" variant="outline">
+                Create Account
+              </Button>
+            </Link>
           </div>
         </div>
 
