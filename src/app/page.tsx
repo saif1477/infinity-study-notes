@@ -52,7 +52,7 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3 opacity-80">
-          <span className="text-sm">Powered by Infinity Study Notes</span>
+          <span className="text-sm">Powered by Infinity AI Diet APP</span>
         </div>
       </main>
     </div>
