@@ -52,9 +52,7 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3 opacity-80">
-          <Image src="/INFINITY" alt="Powered by Infinity AI DIet APP" width={80} height={16} className="dark:invert" />
-          <span className="text-sm">&middot;</span>
-          <Image src="/vercel.svg" alt="Vercel" width={20} height={20} className="dark:invert" />
+          <span className="text-sm">Powered by Infinity Study Notes</span>
         </div>
       </main>
     </div>
