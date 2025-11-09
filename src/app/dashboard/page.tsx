@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { FileText, Eye, Download, MessageSquare, Upload, LogOut, Search, Home } from "lucide-react";
+import { FileText, Eye, Download, MessageSquare, Upload, LogOut, Search, Home, User } from "lucide-react";
 
 interface Note {
   id: number;
@@ -20,6 +20,8 @@ interface Note {
   viewsCount: number;
   downloadsCount: number;
   createdAt: string;
+  uploaderName: string;
+  uploaderRole: string;
 }
 
 interface User {
@@ -215,6 +217,17 @@ export default function DashboardPage() {
                 {note.description && (
                   <p className="mb-4 text-sm text-muted-foreground line-clamp-2">{note.description}</p>
                 )}
+
+                {/* Uploader Info */}
+                <div className="mb-3 flex items-center gap-2 text-xs">
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <User className="h-3 w-3" />
+                    <span>{note.uploaderName}</span>
+                  </div>
+                  <span className="rounded-full bg-secondary px-2 py-0.5 text-xs capitalize">
+                    {note.uploaderRole}
+                  </span>
+                </div>
 
                 <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
