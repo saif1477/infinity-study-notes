@@ -15,6 +15,7 @@ export async function DELETE(
     try {
       const text = await request.text();
       body = text ? JSON.parse(text) : {};
+      console.log('Parsed body:', body);
     } catch (e) {
       return NextResponse.json(
         {
@@ -31,11 +32,15 @@ export async function DELETE(
     const messageId = parseInt(id);
     const parsedUserId = parseInt(userId);
 
+    console.log('messageId:', messageId, 'parsedUserId:', parsedUserId);
+    console.log('isNaN checks:', isNaN(messageId), isNaN(parsedUserId));
+
     if (isNaN(messageId) || isNaN(parsedUserId)) {
       return NextResponse.json(
         {
           error: 'Invalid message ID or user ID',
-          code: 'INVALID_PARAMETERS'
+          code: 'INVALID_PARAMETERS',
+          debug: { messageId, parsedUserId, userId, id }
         },
         { status: 400 }
       );
