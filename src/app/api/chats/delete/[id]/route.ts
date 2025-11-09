@@ -10,37 +10,19 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    // Parse body
-    let body;
-    try {
-      body = await request.json();
-      console.log('Parsed body:', body);
-    } catch (e) {
-      console.error('JSON parse error:', e);
-      return NextResponse.json(
-        {
-          error: 'Invalid JSON body',
-          code: 'INVALID_JSON'
-        },
-        { status: 400 }
-      );
-    }
-
-    const { userId } = body;
+    // Get userId from query parameter
+    const searchParams = request.nextUrl.searchParams;
+    const userId = searchParams.get('userId');
 
     // Validate parameters
     const messageId = parseInt(id);
-    const parsedUserId = parseInt(userId);
-
-    console.log('messageId:', messageId, 'parsedUserId:', parsedUserId);
-    console.log('isNaN checks:', isNaN(messageId), isNaN(parsedUserId));
+    const parsedUserId = parseInt(userId || '');
 
     if (isNaN(messageId) || isNaN(parsedUserId)) {
       return NextResponse.json(
         {
           error: 'Invalid message ID or user ID',
-          code: 'INVALID_PARAMETERS',
-          debug: { messageId, parsedUserId, userId, id }
+          code: 'INVALID_PARAMETERS'
         },
         { status: 400 }
       );
