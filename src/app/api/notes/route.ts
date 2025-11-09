@@ -210,8 +210,25 @@ export async function GET(request: NextRequest) {
       conditions.push(like(notes.subjectName, `%${subjectParam.trim()}%`));
     }
 
-    // Build and execute query
-    let query = db.select().from(notes);
+    // Build and execute query with JOIN to get uploader info
+    let query = db.select({
+      id: notes.id,
+      title: notes.title,
+      subjectName: notes.subjectName,
+      semester: notes.semester,
+      fileUrl: notes.fileUrl,
+      fileType: notes.fileType,
+      description: notes.description,
+      viewsCount: notes.viewsCount,
+      downloadsCount: notes.downloadsCount,
+      createdAt: notes.createdAt,
+      updatedAt: notes.updatedAt,
+      userId: notes.userId,
+      uploaderName: users.name,
+      uploaderRole: users.role
+    })
+    .from(notes)
+    .leftJoin(users, eq(notes.userId, users.id));
 
     if (conditions.length > 0) {
       query = query.where(and(...conditions));
