@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { FileText, Eye, Download, MessageSquare, Upload, LogOut, Search } from "lucide-react";
+import { FileText, Eye, Download, MessageSquare, Upload, LogOut, Search, Home } from "lucide-react";
 
 interface Note {
   id: number;
@@ -129,7 +129,15 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <h1 className="text-xl font-bold">GITAM Notes Hub</h1>
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <Home className="mr-2 h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+            <h1 className="text-xl font-bold">GITAM Notes Hub</h1>
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
               {user?.name} ({user?.role})

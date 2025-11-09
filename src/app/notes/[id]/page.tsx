@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ArrowLeft, Send, Download, Eye, FileText } from "lucide-react";
+import { ArrowLeft, Send, Download, Eye, FileText, Home } from "lucide-react";
 
 interface Note {
   id: number;
@@ -156,11 +156,17 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-background">
-        <div className="container mx-auto flex h-16 items-center px-4">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/dashboard">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
+            </Button>
+          </Link>
+          <Link href="/">
+            <Button variant="ghost" size="sm">
+              <Home className="mr-2 h-4 w-4" />
+              Home
             </Button>
           </Link>
         </div>

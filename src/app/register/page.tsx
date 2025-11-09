@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
+import { Home } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -57,11 +58,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12 relative">
+      {/* Back to Home Button */}
+      <div className="absolute top-4 left-4">
+        <Link href="/">
+          <Button variant="ghost" size="sm">
+            <Home className="mr-2 h-4 w-4" />
+            Back to Home
+          </Button>
+        </Link>
+      </div>
+
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">GITAM Notes Hub</h1>
-          <p className="mt-2 text-muted-foreground">Create your account</p>
+          <h1 className="text-3xl font-bold tracking-tight">Create Account</h1>
+          <p className="mt-2 text-muted-foreground">Join the GITAM Notes community</p>
         </div>
 
         <div className="rounded-lg border border-border bg-card p-8">
@@ -84,13 +95,29 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="student@gitam.in"
+                placeholder={role === "student" ? "student@student.gitam.edu" : "professor@gitam.edu"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
               />
-              <p className="text-xs text-muted-foreground">Must end with @gitam.in</p>
+              <p className="text-xs text-muted-foreground">
+                {role === "student" ? "Must end with @student.gitam.edu" : "Must end with @gitam.edu"}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <Label>I am a</Label>
+              <RadioGroup value={role} onValueChange={(value) => setRole(value as "student" | "professor")} disabled={isLoading}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="student" id="student" />
+                  <Label htmlFor="student" className="font-normal cursor-pointer">Student</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="professor" id="professor" />
+                  <Label htmlFor="professor" className="font-normal cursor-pointer">Professor</Label>
+                </div>
+              </RadioGroup>
             </div>
 
             <div className="space-y-2">
@@ -119,20 +146,6 @@ export default function RegisterPage() {
                 disabled={isLoading}
                 autoComplete="off"
               />
-            </div>
-
-            <div className="space-y-3">
-              <Label>I am a</Label>
-              <RadioGroup value={role} onValueChange={(value) => setRole(value as "student" | "professor")} disabled={isLoading}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="student" id="student" />
-                  <Label htmlFor="student" className="font-normal cursor-pointer">Student</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="professor" id="professor" />
-                  <Label htmlFor="professor" className="font-normal cursor-pointer">Professor</Label>
-                </div>
-              </RadioGroup>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>

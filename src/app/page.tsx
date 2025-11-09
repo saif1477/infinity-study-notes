@@ -12,21 +12,16 @@ export default function Home() {
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Live preview
           </div>
-          <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl">
-            GITAM Notes Hub
+          <h1 className="text-balance text-5xl font-bold tracking-tight sm:text-6xl bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            Infinity Study Notes
           </h1>
-          <p className="mt-4 max-w-2xl text-pretty text-muted-foreground">
-            Upload, browse, and discuss course notes with your classmates. Built for GITAM University students and professors.
+          <p className="mt-4 max-w-2xl text-pretty text-lg text-muted-foreground">
+            Your ultimate platform for sharing and accessing course notes. Connect with students and professors at GITAM University.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="/login">
-              <Button size="lg">
+            <Link href="/get-started">
+              <Button size="lg" className="px-8">
                 Get Started
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button size="lg" variant="outline">
-                Create Account
               </Button>
             </Link>
           </div>
