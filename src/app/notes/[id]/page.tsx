@@ -133,10 +133,8 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
     if (!user) return;
 
     try {
-      const res = await fetch(`/api/chats/delete/${messageId}`, {
+      const res = await fetch(`/api/chats/delete/${messageId}?userId=${user.id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user.id }),
       });
 
       const data = await res.json();
