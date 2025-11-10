@@ -141,6 +141,11 @@ export default function DashboardPage() {
             <h1 className="text-xl font-bold">GITAM Notes Hub</h1>
           </div>
           <div className="flex items-center gap-4">
+            <Link href="/profile">
+              <Button variant="ghost" size="icon" title="My Profile">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
             <span className="text-sm text-muted-foreground">
               {user?.name} ({user?.role})
             </span>
