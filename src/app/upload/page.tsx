@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ArrowLeft, Home, User } from "lucide-react";
+import { ArrowLeft, Home, User, Upload as UploadIcon } from "lucide-react";
 import Link from "next/link";
 
 interface User {
@@ -25,9 +25,9 @@ export default function UploadPage() {
   const [subjectName, setSubjectName] = useState("");
   const [semester, setSemester] = useState<string>("");
   const [description, setDescription] = useState("");
-  const [fileUrl, setFileUrl] = useState("");
-  const [fileType, setFileType] = useState<"pdf" | "docx">("pdf");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,6 +40,57 @@ export default function UploadPage() {
 
     setUser(JSON.parse(userStr));
   }, [router]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (ext !== 'pdf' && ext !== 'docx' && ext !== 'doc') {
+      toast.error("Only PDF and DOCX files are allowed");
+      e.target.value = '';
+      return;
+    }
+
+    // Validate file size (100MB)
+    const maxSize = 100 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File size must be less than 100MB");
+      e.target.value = '';
+      return;
+    }
+
+    setSelectedFile(file);
+  };
+
+  const uploadToSupabase = async (url: string, file: File): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100);
+          setUploadProgress(percentComplete);
+        }
+      });
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status === 200) {
+          resolve();
+        } else {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      });
+
+      xhr.addEventListener('error', () => reject(new Error('Upload error')));
+      xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+
+      xhr.open('PUT', url, true);
+      xhr.setRequestHeader('Content-Type', file.type);
+      xhr.send(file);
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,10 +105,43 @@ export default function UploadPage() {
       return;
     }
 
+    if (!selectedFile) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
     setIsLoading(true);
+    setUploadProgress(0);
 
     try {
-      const res = await fetch("/api/notes", {
+      // Step 1: Generate presigned upload URL
+      const urlRes = await fetch("/api/upload/generate-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fileName: selectedFile.name,
+          fileSize: selectedFile.size,
+          userId: user.id,
+        }),
+      });
+
+      const urlData = await urlRes.json();
+
+      if (!urlRes.ok) {
+        toast.error(urlData.error || "Failed to generate upload URL");
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Upload file to Supabase Storage
+      toast.info("Uploading file...");
+      await uploadToSupabase(urlData.url, selectedFile);
+      toast.success("File uploaded successfully!");
+
+      // Step 3: Save note metadata to database
+      const noteRes = await fetch("/api/notes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,25 +151,30 @@ export default function UploadPage() {
           title,
           subjectName,
           semester: parseInt(semester),
-          fileUrl,
-          fileType,
+          fileUrl: urlData.url.split('?')[0], // Store base URL without query params
+          fileType: urlData.fileType,
+          fileKey: urlData.fileKey,
+          fileName: selectedFile.name,
+          fileSize: selectedFile.size,
           description: description || null,
         }),
       });
 
-      const data = await res.json();
+      const noteData = await noteRes.json();
 
-      if (!res.ok) {
-        toast.error(data.error || "Failed to upload note");
+      if (!noteRes.ok) {
+        toast.error(noteData.error || "Failed to save note");
         return;
       }
 
       toast.success("Note uploaded successfully!");
       router.push("/dashboard");
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      console.error('Upload error:', error);
+      toast.error(error instanceof Error ? error.message : "An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -175,32 +264,20 @@ export default function UploadPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="fileUrl">File URL *</Label>
+              <Label htmlFor="file">File (PDF or DOCX, max 100MB) *</Label>
               <Input
-                id="fileUrl"
-                type="url"
-                placeholder="https://example.com/file.pdf"
-                value={fileUrl}
-                onChange={(e) => setFileUrl(e.target.value)}
+                id="file"
+                type="file"
+                accept=".pdf,.docx,.doc"
+                onChange={handleFileChange}
                 required
                 disabled={isLoading}
               />
-              <p className="text-xs text-muted-foreground">
-                Upload your file to Google Drive, Dropbox, or similar and paste the shareable link here
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="fileType">File Type *</Label>
-              <Select value={fileType} onValueChange={(value: "pdf" | "docx") => setFileType(value)} disabled={isLoading}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pdf">PDF</SelectItem>
-                  <SelectItem value="docx">DOCX</SelectItem>
-                </SelectContent>
-              </Select>
+              {selectedFile && (
+                <p className="text-xs text-muted-foreground">
+                  Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -215,7 +292,23 @@ export default function UploadPage() {
               />
             </div>
 
+            {isLoading && uploadProgress > 0 && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Uploading...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-2">
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
             <Button type="submit" className="w-full" disabled={isLoading}>
+              <UploadIcon className="mr-2 h-4 w-4" />
               {isLoading ? "Uploading..." : "Upload Notes"}
             </Button>
           </form>
