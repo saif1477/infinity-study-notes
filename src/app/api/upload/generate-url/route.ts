@@ -1,67 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateUploadUrl, validateFileType, validateFileSize } from '@/lib/supabase-storage';
+import { writeFile, mkdir } from 'fs/promises';
+import { join } from 'path';
+import { db } from '@/db';
+import { notes } from '@/db/schema';
+import { existsSync } from 'fs';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json();
-    const { fileName, fileSize, userId } = body;
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
+    const title = formData.get('title') as string;
+    const subjectName = formData.get('subjectName') as string;
+    const semester = parseInt(formData.get('semester') as string);
+    const description = formData.get('description') as string;
+    const userId = parseInt(formData.get('userId') as string);
 
-    // Validate required fields
-    if (!fileName || !fileSize || !userId) {
-      return NextResponse.json(
-        { error: 'Missing required fields: fileName, fileSize, userId' },
-        { status: 400 }
-      );
-    }
-
-    // Validate userId
-    const parsedUserId = parseInt(userId);
-    if (isNaN(parsedUserId)) {
-      return NextResponse.json(
-        { error: 'Invalid userId' },
-        { status: 400 }
-      );
+    if (!file || !title || !subjectName || !semester || !userId) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     // Validate file type
-    const fileTypeValidation = validateFileType(fileName);
-    if (!fileTypeValidation.valid) {
-      return NextResponse.json(
-        { error: fileTypeValidation.error },
-        { status: 400 }
-      );
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json({ error: 'Invalid file type. Only PDF and DOCX files are allowed.' }, { status: 400 });
     }
 
-    // Validate file size
-    const fileSizeValidation = validateFileSize(fileSize);
-    if (!fileSizeValidation.valid) {
-      return NextResponse.json(
-        { error: fileSizeValidation.error },
-        { status: 400 }
-      );
+    // Validate file size (100MB max)
+    const maxSize = 100 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return NextResponse.json({ error: 'File size exceeds 100MB limit' }, { status: 400 });
     }
 
-    // Generate presigned upload URL
-    const result = await generateUploadUrl(parsedUserId, fileName);
-
-    if (result.error) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = join(process.cwd(), 'public', 'uploads');
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true });
     }
 
-    return NextResponse.json({
-      url: result.url,
-      token: result.token,
-      fileKey: result.fileKey,
-      fileType: fileTypeValidation.fileType,
+    // Generate unique filename
+    const timestamp = Date.now();
+    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const uniqueFileName = `${timestamp}-${sanitizedFileName}`;
+    const filePath = join(uploadsDir, uniqueFileName);
+
+    // Save file to disk
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    await writeFile(filePath, buffer);
+
+    // Create file URL (accessible via /uploads/filename)
+    const fileUrl = `/uploads/${uniqueFileName}`;
+    const fileKey = uniqueFileName;
+
+    // Save to database
+    const now = new Date().toISOString();
+    const [note] = await db.insert(notes).values({
+      userId,
+      title,
+      subjectName,
+      semester,
+      fileUrl,
+      fileType: file.type,
+      fileKey,
+      fileName: file.name,
+      fileSize: file.size,
+      description: description || null,
+      viewsCount: 0,
+      downloadsCount: 0,
+      createdAt: now,
+      updatedAt: now,
+    }).returning();
+
+    return NextResponse.json({ 
+      success: true, 
+      note,
+      message: 'File uploaded successfully'
     });
-  } catch (error) {
-    console.error('Generate upload URL error:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate upload URL' },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    return NextResponse.json({ error: error.message || 'Upload failed' }, { status: 500 });
   }
 }
