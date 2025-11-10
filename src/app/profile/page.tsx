@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { FileText, Download, Home, LogOut, Upload, Calendar, User as UserIcon } from "lucide-react";
+import { FileText, Download, Home, LogOut, Upload, Calendar, User as UserIcon, Shield } from "lucide-react";
 
 interface Note {
   id: number;
@@ -124,6 +124,14 @@ export default function ProfilePage() {
             <h1 className="text-xl font-bold">My Profile</h1>
           </div>
           <div className="flex items-center gap-4">
+            {user?.role === "admin" && (
+              <Link href="/admin">
+                <Button variant="ghost" size="sm">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Admin Panel
+                </Button>
+              </Link>
+            )}
             <Link href="/upload">
               <Button size="sm">
                 <Upload className="mr-2 h-4 w-4" />
