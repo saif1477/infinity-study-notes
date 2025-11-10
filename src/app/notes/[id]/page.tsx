@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ArrowLeft, Send, Download, Eye, FileText, Home, Trash2 } from "lucide-react";
+import { ArrowLeft, Send, Download, Eye, FileText, Home, Trash2, User } from "lucide-react";
 
 interface Note {
   id: number;
@@ -191,12 +191,19 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
               Back to Dashboard
             </Button>
           </Link>
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              <Home className="mr-2 h-4 w-4" />
-              Home
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/profile">
+              <Button variant="ghost" size="icon" title="My Profile">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
+            <Link href="/">
+              <Button variant="ghost" size="sm">
+                <Home className="mr-2 h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
