@@ -11,10 +11,10 @@ export const users = sqliteTable('users', {
   updatedAt: text('updated_at').notNull(),
 });
 
-// Update notes table - add user_id, subject_name, description, views/downloads counts, updated_at
+// Update notes table - add ON DELETE CASCADE for userId foreign key
 export const notes = sqliteTable('notes', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   subjectName: text('subject_name').notNull(),
   semester: integer('semester').notNull(),
@@ -27,11 +27,11 @@ export const notes = sqliteTable('notes', {
   updatedAt: text('updated_at').notNull(),
 });
 
-// Update chats table - remove receiver_id and is_read, keep note_id, sender_id, message
+// Update chats table - add ON DELETE CASCADE for both noteId and senderId foreign keys
 export const chats = sqliteTable('chats', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  noteId: integer('note_id').notNull().references(() => notes.id),
-  senderId: integer('sender_id').notNull().references(() => users.id),
+  noteId: integer('note_id').notNull().references(() => notes.id, { onDelete: 'cascade' }),
+  senderId: integer('sender_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   message: text('message').notNull(),
   createdAt: text('created_at').notNull(),
 });
