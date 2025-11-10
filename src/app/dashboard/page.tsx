@@ -16,6 +16,9 @@ interface Note {
   semester: number;
   fileUrl: string;
   fileType: string;
+  fileKey: string;
+  fileName: string;
+  fileSize: number;
   description: string | null;
   viewsCount: number;
   downloadsCount: number;
@@ -101,9 +104,32 @@ export default function DashboardPage() {
 
   const handleDownload = async (note: Note) => {
     try {
+      // Increment download count first
       await fetch(`/api/notes/${note.id}/increment-download`, { method: "PUT" });
-      window.open(note.fileUrl, "_blank");
+
+      // Get secure download URL
+      const res = await fetch(`/api/download/${note.id}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Failed to get download URL");
+        return;
+      }
+
+      // Open file in new tab or trigger download
+      const isInIframe = window.self !== window.top;
+      if (isInIframe) {
+        window.parent.postMessage(
+          { type: "OPEN_EXTERNAL_URL", data: { url: data.url } },
+          "*"
+        );
+      } else {
+        window.open(data.url, "_blank", "noopener,noreferrer");
+      }
+
+      // Reload notes to update download count
       loadNotes();
+      toast.success("Download started");
     } catch (error) {
       toast.error("Failed to download note");
     }
@@ -239,6 +265,11 @@ export default function DashboardPage() {
                     <Download className="h-3 w-3" />
                     {note.downloadsCount} downloads
                   </div>
+                  {note.fileSize && (
+                    <span>
+                      {(note.fileSize / 1024 / 1024).toFixed(2)} MB
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex gap-2">
