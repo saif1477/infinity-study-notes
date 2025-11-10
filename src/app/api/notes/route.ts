@@ -6,13 +6,13 @@ import { eq, like, and } from 'drizzle-orm';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, title, subjectName, semester, fileUrl, fileType, description } = body;
+    const { userId, title, subjectName, semester, fileUrl, fileType, fileKey, fileName, fileSize, description } = body;
 
     // Validate required fields
-    if (!userId || !title || !subjectName || !semester || !fileUrl || !fileType) {
+    if (!userId || !title || !subjectName || !semester || !fileUrl || !fileType || !fileKey || !fileName || !fileSize) {
       return NextResponse.json(
         { 
-          error: 'All required fields must be provided: userId, title, subjectName, semester, fileUrl, fileType',
+          error: 'All required fields must be provided: userId, title, subjectName, semester, fileUrl, fileType, fileKey, fileName, fileSize',
           code: 'MISSING_REQUIRED_FIELDS'
         },
         { status: 400 }
@@ -104,6 +104,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate fileKey
+    if (typeof fileKey !== 'string' || fileKey.trim() === '') {
+      return NextResponse.json(
+        { 
+          error: 'File key is required and cannot be empty',
+          code: 'INVALID_FILE_KEY'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate fileName
+    if (typeof fileName !== 'string' || fileName.trim() === '') {
+      return NextResponse.json(
+        { 
+          error: 'File name is required and cannot be empty',
+          code: 'INVALID_FILE_NAME'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Validate fileSize
+    const parsedFileSize = parseInt(fileSize);
+    if (isNaN(parsedFileSize) || parsedFileSize <= 0) {
+      return NextResponse.json(
+        { 
+          error: 'File size must be a positive integer',
+          code: 'INVALID_FILE_SIZE'
+        },
+        { status: 400 }
+      );
+    }
+
     // Create timestamp
     const timestamp = new Date().toISOString();
 
@@ -116,6 +150,9 @@ export async function POST(request: NextRequest) {
         semester: parsedSemester,
         fileUrl: fileUrl.trim(),
         fileType: normalizedFileType,
+        fileKey: fileKey.trim(),
+        fileName: fileName.trim(),
+        fileSize: parsedFileSize,
         description: description ? description.trim() : null,
         viewsCount: 0,
         downloadsCount: 0,
@@ -218,6 +255,9 @@ export async function GET(request: NextRequest) {
       semester: notes.semester,
       fileUrl: notes.fileUrl,
       fileType: notes.fileType,
+      fileKey: notes.fileKey,
+      fileName: notes.fileName,
+      fileSize: notes.fileSize,
       description: notes.description,
       viewsCount: notes.viewsCount,
       downloadsCount: notes.downloadsCount,
