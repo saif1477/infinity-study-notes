@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { notes } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { generateDownloadUrl } from '@/lib/supabase-storage';
 
 export async function GET(
   req: NextRequest,
@@ -19,18 +18,16 @@ export async function GET(
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
     }
 
-    // Read file from disk
-    const filePath = join(process.cwd(), 'public', 'uploads', note.fileKey);
-    const fileBuffer = await readFile(filePath);
+    // Generate presigned download URL from Supabase Storage
+    const { url, error } = await generateDownloadUrl(note.fileKey, 3600); // Valid for 1 hour
 
-    // Return file with appropriate headers
-    return new NextResponse(fileBuffer, {
-      headers: {
-        'Content-Type': note.fileType,
-        'Content-Disposition': `attachment; filename="${note.fileName}"`,
-        'Content-Length': note.fileSize.toString(),
-      },
-    });
+    if (error || !url) {
+      console.error('Failed to generate download URL:', error);
+      return NextResponse.json({ error: 'Failed to generate download URL' }, { status: 500 });
+    }
+
+    // Redirect to the presigned download URL
+    return NextResponse.redirect(url);
   } catch (error: any) {
     console.error('Download error:', error);
     return NextResponse.json({ error: 'Download failed' }, { status: 500 });
