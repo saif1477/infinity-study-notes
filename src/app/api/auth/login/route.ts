@@ -77,6 +77,17 @@ export async function POST(request: NextRequest) {
 
     const user = userResult[0];
 
+    // Check if user is blocked
+    if (user.isBlocked) {
+      return NextResponse.json(
+        {
+          error: 'Your account has been blocked. Please contact the administrator.',
+          code: 'ACCOUNT_BLOCKED',
+        },
+        { status: 403 }
+      );
+    }
+
     // Compare password with stored hash
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
