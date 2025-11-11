@@ -1,12 +1,13 @@
 import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
 
-// Update users table - add password_hash, modify role, add updated_at
+// Update users table - add isBlocked field
 export const users = sqliteTable('users', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   name: text('name').notNull(),
   role: text('role').notNull(), // 'student' or 'professor'
+  isBlocked: integer('is_blocked', { mode: 'boolean' }).notNull().default(false),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
