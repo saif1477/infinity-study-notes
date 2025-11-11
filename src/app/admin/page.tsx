@@ -16,6 +16,8 @@ import {
   BarChart3,
   LogOut,
   AlertTriangle,
+  Ban,
+  CheckCircle,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -34,6 +36,7 @@ interface User {
   name: string;
   email: string;
   role: string;
+  isBlocked: boolean;
   createdAt: string;
   notesCount: number;
 }
@@ -73,7 +76,9 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ type: "user" | "note"; id: number } | null>(null);
+  const [blockTarget, setBlockTarget] = useState<{ userId: number; userName: string; isBlocked: boolean } | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -176,6 +181,32 @@ export default function AdminPage() {
     }
   };
 
+  const handleBlockUser = async (userId: number, shouldBlock: boolean) => {
+    const token = localStorage.getItem("token");
+    const endpoint = shouldBlock ? "block" : "unblock";
+
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/${endpoint}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      });
+
+      if (res.ok) {
+        toast.success(`User ${shouldBlock ? "blocked" : "unblocked"} successfully`);
+        loadAdminData();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || `Failed to ${endpoint} user`);
+      }
+    } catch (error) {
+      toast.error(`An error occurred while ${shouldBlock ? "blocking" : "unblocking"} user`);
+    }
+  };
+
   const confirmDelete = () => {
     if (!deleteTarget) return;
 
@@ -187,6 +218,13 @@ export default function AdminPage() {
 
     setDeleteDialogOpen(false);
     setDeleteTarget(null);
+  };
+
+  const confirmBlock = () => {
+    if (!blockTarget) return;
+    handleBlockUser(blockTarget.userId, !blockTarget.isBlocked);
+    setBlockDialogOpen(false);
+    setBlockTarget(null);
   };
 
   const handleLogout = () => {
@@ -366,6 +404,7 @@ export default function AdminPage() {
                       <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Role</th>
+                      <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Notes</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Joined</th>
                       <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
@@ -381,23 +420,60 @@ export default function AdminPage() {
                             {user.role}
                           </span>
                         </td>
+                        <td className="px-4 py-3 text-sm">
+                          {user.isBlocked ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-1 text-xs text-destructive">
+                              <Ban className="h-3 w-3" />
+                              Blocked
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-500/10 px-2 py-1 text-xs text-green-600 dark:text-green-400">
+                              <CheckCircle className="h-3 w-3" />
+                              Active
+                            </span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-sm">{user.notesCount}</td>
                         <td className="px-4 py-3 text-sm">
                           {new Date(user.createdAt).toLocaleDateString()}
                         </td>
                         <td className="px-4 py-3 text-sm text-right">
-                          {user.id !== currentUser?.id && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setDeleteTarget({ type: "user", id: user.id });
-                                setDeleteDialogOpen(true);
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          )}
+                          <div className="flex items-center justify-end gap-2">
+                            {user.id !== currentUser?.id && (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setBlockTarget({
+                                      userId: user.id,
+                                      userName: user.name,
+                                      isBlocked: user.isBlocked,
+                                    });
+                                    setBlockDialogOpen(true);
+                                  }}
+                                  title={user.isBlocked ? "Unblock user" : "Block user"}
+                                >
+                                  {user.isBlocked ? (
+                                    <CheckCircle className="h-4 w-4 text-green-600" />
+                                  ) : (
+                                    <Ban className="h-4 w-4 text-orange-600" />
+                                  )}
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setDeleteTarget({ type: "user", id: user.id });
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                  title="Delete user"
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -510,6 +586,36 @@ export default function AdminPage() {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Block/Unblock Confirmation Dialog */}
+      <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {blockTarget?.isBlocked ? (
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              ) : (
+                <Ban className="h-5 w-5 text-orange-600" />
+              )}
+              {blockTarget?.isBlocked ? "Unblock User" : "Block User"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {blockTarget?.isBlocked
+                ? `Are you sure you want to unblock ${blockTarget?.userName}? They will regain access to the platform.`
+                : `Are you sure you want to block ${blockTarget?.userName}? They will be unable to login until unblocked.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmBlock}
+              className={blockTarget?.isBlocked ? "bg-green-600 hover:bg-green-700" : "bg-orange-600 hover:bg-orange-700"}
+            >
+              {blockTarget?.isBlocked ? "Unblock" : "Block"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
