@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { db } from '@/db';
 import { notes } from '@/db/schema';
-import { existsSync } from 'fs';
+import { supabase } from '@/lib/supabase-storage';
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,26 +29,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'File size exceeds 100MB limit' }, { status: 400 });
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
-    // Generate unique filename
+    // Generate unique file key with timestamp
     const timestamp = Date.now();
-    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const uniqueFileName = `${timestamp}-${sanitizedFileName}`;
-    const filePath = join(uploadsDir, uniqueFileName);
+    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+    const fileKey = `notes/${userId}/${timestamp}-${sanitizedFileName}`;
 
-    // Save file to disk
+    // Upload directly to Supabase storage
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
 
-    // Create file URL (accessible via /uploads/filename)
-    const fileUrl = `/uploads/${uniqueFileName}`;
-    const fileKey = uniqueFileName;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('notes')
+      .upload(fileKey, buffer, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Supabase upload error:', uploadError);
+      return NextResponse.json({ 
+        error: uploadError.message || 'Failed to upload file to storage' 
+      }, { status: 500 });
+    }
+
+    // Get public URL for the uploaded file
+    const { data: urlData } = supabase.storage
+      .from('notes')
+      .getPublicUrl(fileKey);
+
+    const fileUrl = urlData.publicUrl;
 
     // Save to database
     const now = new Date().toISOString();
