@@ -11,7 +11,7 @@ export const users = sqliteTable('users', {
   updatedAt: text('updated_at').notNull(),
 });
 
-// Update notes table - add ON DELETE CASCADE for userId foreign key
+// Update notes table - remove viewsCount
 export const notes = sqliteTable('notes', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
@@ -24,7 +24,6 @@ export const notes = sqliteTable('notes', {
   fileName: text('file_name').notNull(),
   fileSize: integer('file_size').notNull(),
   description: text('description'),
-  viewsCount: integer('views_count').notNull().default(0),
   downloadsCount: integer('downloads_count').notNull().default(0),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
