@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     // Create timestamp
     const timestamp = new Date().toISOString();
 
-    // Create new note
+    // Create new note - removed viewsCount
     const newNote = await db.insert(notes)
       .values({
         userId: parsedUserId,
@@ -154,7 +154,6 @@ export async function POST(request: NextRequest) {
         fileName: fileName.trim(),
         fileSize: parsedFileSize,
         description: description ? description.trim() : null,
-        viewsCount: 0,
         downloadsCount: 0,
         createdAt: timestamp,
         updatedAt: timestamp
@@ -247,7 +246,7 @@ export async function GET(request: NextRequest) {
       conditions.push(like(notes.subjectName, `%${subjectParam.trim()}%`));
     }
 
-    // Build and execute query with JOIN to get uploader info
+    // Build and execute query with JOIN to get uploader info - removed viewsCount
     let query = db.select({
       id: notes.id,
       title: notes.title,
@@ -259,7 +258,6 @@ export async function GET(request: NextRequest) {
       fileName: notes.fileName,
       fileSize: notes.fileSize,
       description: notes.description,
-      viewsCount: notes.viewsCount,
       downloadsCount: notes.downloadsCount,
       createdAt: notes.createdAt,
       updatedAt: notes.updatedAt,
