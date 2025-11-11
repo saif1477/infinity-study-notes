@@ -10,7 +10,6 @@ import {
   FileText,
   Users,
   Download,
-  Eye,
   Trash2,
   Search,
   Home,
@@ -273,7 +272,7 @@ export default function AdminPage() {
             <h2 className="text-2xl font-bold">Dashboard Overview</h2>
 
             {/* Stats Cards */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-lg border border-border bg-card p-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -301,16 +300,6 @@ export default function AdminPage() {
                     <p className="text-3xl font-bold">{stats?.totalDownloads || 0}</p>
                   </div>
                   <Download className="h-8 w-8 text-muted-foreground" />
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-border bg-card p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Views</p>
-                    <p className="text-3xl font-bold">{stats?.totalViews || 0}</p>
-                  </div>
-                  <Eye className="h-8 w-8 text-muted-foreground" />
                 </div>
               </div>
             </div>
@@ -452,7 +441,6 @@ export default function AdminPage() {
                       <th className="px-4 py-3 text-left text-sm font-medium">Subject</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Semester</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Uploader</th>
-                      <th className="px-4 py-3 text-left text-sm font-medium">Views</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Downloads</th>
                       <th className="px-4 py-3 text-left text-sm font-medium">Size</th>
                       <th className="px-4 py-3 text-right text-sm font-medium">Actions</th>
@@ -470,7 +458,6 @@ export default function AdminPage() {
                             <p className="text-xs text-muted-foreground">{note.uploaderEmail}</p>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm">{note.viewsCount}</td>
                         <td className="px-4 py-3 text-sm">{note.downloadsCount}</td>
                         <td className="px-4 py-3 text-sm">
                           {(note.fileSize / 1024 / 1024).toFixed(2)} MB

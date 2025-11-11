@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { FileText, Eye, Download, MessageSquare, Upload, LogOut, Search, Home, User, Shield } from "lucide-react";
+import { FileText, Download, MessageSquare, Upload, LogOut, Search, Home, User, Shield } from "lucide-react";
 
 interface Note {
   id: number;
@@ -136,12 +136,7 @@ export default function DashboardPage() {
   };
 
   const handleView = async (noteId: number) => {
-    try {
-      await fetch(`/api/notes/${noteId}/increment-view`, { method: "PUT" });
-      router.push(`/notes/${noteId}`);
-    } catch (error) {
-      toast.error("Failed to open note");
-    }
+    router.push(`/notes/${noteId}`);
   };
 
   if (isLoading) {
@@ -269,10 +264,6 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="mb-4 flex items-center gap-4 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Download className="h-3 w-3" />
-                    {note.downloadsCount} downloads
-                  </div>
                   {note.fileSize && (
                     <span>
                       {(note.fileSize / 1024 / 1024).toFixed(2)} MB

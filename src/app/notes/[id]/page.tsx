@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ArrowLeft, Send, Download, Eye, FileText, Home, Trash2, User } from "lucide-react";
+import { ArrowLeft, Send, Download, FileText, Home, Trash2, User } from "lucide-react";
 
 interface Note {
   id: number;
@@ -160,8 +160,30 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
   const handleDownload = async () => {
     if (!note) return;
     try {
+      // Increment download count
       await fetch(`/api/notes/${note.id}/increment-download`, { method: "PUT" });
-      window.open(note.fileUrl, "_blank");
+
+      // Get secure download URL
+      const res = await fetch(`/api/download/${note.id}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Failed to get download URL");
+        return;
+      }
+
+      // Open file in new tab or trigger download
+      const isInIframe = window.self !== window.top;
+      if (isInIframe) {
+        window.parent.postMessage(
+          { type: "OPEN_EXTERNAL_URL", data: { url: data.url } },
+          "*"
+        );
+      } else {
+        window.open(data.url, "_blank", "noopener,noreferrer");
+      }
+
+      toast.success("Download started");
       loadNote();
     } catch (error) {
       toast.error("Failed to download note");
@@ -228,17 +250,6 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
               {note.description && (
                 <p className="mb-6 text-muted-foreground">{note.description}</p>
               )}
-
-              <div className="mb-6 flex gap-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4" />
-                  <span>{note.viewsCount} views</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  <span>{note.downloadsCount} downloads</span>
-                </div>
-              </div>
 
               <Button className="w-full" onClick={handleDownload}>
                 <Download className="mr-2 h-4 w-4" />
