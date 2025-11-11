@@ -26,8 +26,8 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to generate download URL' }, { status: 500 });
     }
 
-    // Redirect to the presigned download URL
-    return NextResponse.redirect(url);
+    // Return the URL as JSON instead of redirecting
+    return NextResponse.json({ url }, { status: 200 });
   } catch (error: any) {
     console.error('Download error:', error);
     return NextResponse.json({ error: 'Download failed' }, { status: 500 });
