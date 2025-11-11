@@ -3,90 +3,36 @@ import { users } from '@/db/schema';
 import bcrypt from 'bcryptjs';
 
 async function main() {
-    const password = 'password123';
-    const passwordHash = bcrypt.hashSync(password, 10);
-
+    const currentTimestamp = new Date().toISOString();
+    
     const sampleUsers = [
         {
-            email: 'rahul.sharma@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Rahul Sharma',
+            email: 'admin@gitam.edu',
+            passwordHash: bcrypt.hashSync('password123', 10),
+            name: 'Admin User',
+            role: 'admin',
+            isBlocked: false,
+            createdAt: currentTimestamp,
+            updatedAt: currentTimestamp,
+        },
+        {
+            email: 'student@student.gitam.edu',
+            passwordHash: bcrypt.hashSync('password123', 10),
+            name: 'Test Student',
             role: 'student',
-            createdAt: new Date('2024-08-15').toISOString(),
-            updatedAt: new Date('2024-08-15').toISOString(),
+            isBlocked: false,
+            createdAt: currentTimestamp,
+            updatedAt: currentTimestamp,
         },
         {
-            email: 'priya.patel@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Priya Patel',
+            email: 'blocked.student@student.gitam.edu',
+            passwordHash: bcrypt.hashSync('password123', 10),
+            name: 'Blocked Student',
             role: 'student',
-            createdAt: new Date('2024-09-01').toISOString(),
-            updatedAt: new Date('2024-09-01').toISOString(),
-        },
-        {
-            email: 'arjun.kumar@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Arjun Kumar',
-            role: 'student',
-            createdAt: new Date('2024-09-15').toISOString(),
-            updatedAt: new Date('2024-09-15').toISOString(),
-        },
-        {
-            email: 'sneha.reddy@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Sneha Reddy',
-            role: 'student',
-            createdAt: new Date('2024-10-05').toISOString(),
-            updatedAt: new Date('2024-10-05').toISOString(),
-        },
-        {
-            email: 'aditya.singh@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Aditya Singh',
-            role: 'student',
-            createdAt: new Date('2024-10-20').toISOString(),
-            updatedAt: new Date('2024-10-20').toISOString(),
-        },
-        {
-            email: 'neha.gupta@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Neha Gupta',
-            role: 'student',
-            createdAt: new Date('2024-11-08').toISOString(),
-            updatedAt: new Date('2024-11-08').toISOString(),
-        },
-        {
-            email: 'karthik.rao@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Karthik Rao',
-            role: 'student',
-            createdAt: new Date('2024-11-22').toISOString(),
-            updatedAt: new Date('2024-11-22').toISOString(),
-        },
-        {
-            email: 'dr.ramesh.gupta@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Dr. Ramesh Gupta',
-            role: 'professor',
-            createdAt: new Date('2024-08-10').toISOString(),
-            updatedAt: new Date('2024-08-10').toISOString(),
-        },
-        {
-            email: 'prof.lakshmi.devi@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Prof. Lakshmi Devi',
-            role: 'professor',
-            createdAt: new Date('2024-09-20').toISOString(),
-            updatedAt: new Date('2024-09-20').toISOString(),
-        },
-        {
-            email: 'dr.vijay.krishnan@gitam.in',
-            passwordHash: passwordHash,
-            name: 'Dr. Vijay Krishnan',
-            role: 'professor',
-            createdAt: new Date('2024-12-01').toISOString(),
-            updatedAt: new Date('2024-12-01').toISOString(),
-        },
+            isBlocked: false,
+            createdAt: currentTimestamp,
+            updatedAt: currentTimestamp,
+        }
     ];
 
     await db.insert(users).values(sampleUsers);
