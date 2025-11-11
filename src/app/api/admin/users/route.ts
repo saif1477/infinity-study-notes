@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
         email: users.email,
         name: users.name,
         role: users.role,
+        isBlocked: users.isBlocked,
         createdAt: users.createdAt,
         notesCount: sql<number>`COALESCE(COUNT(${notes.id}), 0)`,
       })
