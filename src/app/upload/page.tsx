@@ -28,7 +28,7 @@ export default function UploadPage() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("bearer_token");
+    const token = localStorage.getItem("token");
     if (!token) {
       toast.error("Please login to upload notes");
       router.push("/login");
@@ -78,7 +78,7 @@ export default function UploadPage() {
 
     try {
       // Get user info
-      const token = localStorage.getItem("bearer_token");
+      const token = localStorage.getItem("token");
       const userRes = await fetch("/api/auth/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -98,7 +98,7 @@ export default function UploadPage() {
       uploadFormData.append("subjectName", formData.subjectName);
       uploadFormData.append("semester", formData.semester);
       uploadFormData.append("description", formData.description);
-      uploadFormData.append("userId", userData.user.id.toString());
+      uploadFormData.append("userId", userData.id.toString());
 
       // Upload file
       const uploadRes = await fetch("/api/upload/generate-url", {
