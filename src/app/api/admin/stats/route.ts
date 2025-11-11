@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { users, notes, chats } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
+import { decodeToken } from "@/lib/auth-utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,11 +12,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get current user from token
+    // Decode JWT token
+    const decoded = decodeToken(token);
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    // Get current user from decoded token
     const currentUser = await db
       .select()
       .from(users)
-      .where(eq(users.id, parseInt(token)))
+      .where(eq(users.id, decoded.userId))
       .limit(1);
 
     if (!currentUser.length || currentUser[0].role !== "admin") {
@@ -27,10 +34,9 @@ export async function GET(request: NextRequest) {
     const totalNotes = await db.select({ count: sql<number>`COUNT(*)` }).from(notes);
     const totalChats = await db.select({ count: sql<number>`COUNT(*)` }).from(chats);
     
-    // Get total downloads and views
+    // Get total downloads
     const downloadStats = await db.select({
       totalDownloads: sql<number>`SUM(${notes.downloadsCount})`,
-      totalViews: sql<number>`SUM(${notes.viewsCount})`,
     }).from(notes);
 
     // Get users by role
@@ -59,7 +65,6 @@ export async function GET(request: NextRequest) {
       totalNotes: totalNotes[0].count || 0,
       totalChats: totalChats[0].count || 0,
       totalDownloads: downloadStats[0].totalDownloads || 0,
-      totalViews: downloadStats[0].totalViews || 0,
       usersByRole: usersByRole || [],
       notesBySemester: notesBySemester || [],
       storageUsage: storageUsage[0].totalSize || 0,

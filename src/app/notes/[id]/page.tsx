@@ -16,7 +16,6 @@ interface Note {
   fileUrl: string;
   fileType: string;
   description: string | null;
-  viewsCount: number;
   downloadsCount: number;
   createdAt: string;
 }

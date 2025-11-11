@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { users, notes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { createClient } from "@supabase/supabase-js";
+import { decodeToken } from "@/lib/auth-utils";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,11 +22,17 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get current user from token
+    // Decode JWT token
+    const decoded = decodeToken(token);
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    // Get current user from decoded token
     const currentUser = await db
       .select()
       .from(users)
-      .where(eq(users.id, parseInt(token)))
+      .where(eq(users.id, decoded.userId))
       .limit(1);
 
     if (!currentUser.length || currentUser[0].role !== "admin") {

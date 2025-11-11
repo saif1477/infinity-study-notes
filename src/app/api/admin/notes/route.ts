@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { users, notes } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { decodeToken } from "@/lib/auth-utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,11 +12,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get current user from token
+    // Decode JWT token
+    const decoded = decodeToken(token);
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+
+    // Get current user from decoded token
     const currentUser = await db
       .select()
       .from(users)
-      .where(eq(users.id, parseInt(token)))
+      .where(eq(users.id, decoded.userId))
       .limit(1);
 
     if (!currentUser.length || currentUser[0].role !== "admin") {
@@ -36,7 +43,6 @@ export async function GET(request: NextRequest) {
         fileName: notes.fileName,
         fileSize: notes.fileSize,
         description: notes.description,
-        viewsCount: notes.viewsCount,
         downloadsCount: notes.downloadsCount,
         createdAt: notes.createdAt,
         uploaderName: users.name,

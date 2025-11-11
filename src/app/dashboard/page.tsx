@@ -20,7 +20,6 @@ interface Note {
   fileName: string;
   fileSize: number;
   description: string | null;
-  viewsCount: number;
   downloadsCount: number;
   createdAt: string;
   uploaderName: string;
@@ -269,6 +268,10 @@ export default function DashboardPage() {
                       {(note.fileSize / 1024 / 1024).toFixed(2)} MB
                     </span>
                   )}
+                  <div className="flex items-center gap-1">
+                    <Download className="h-3 w-3" />
+                    {note.downloadsCount}
+                  </div>
                 </div>
 
                 <div className="flex gap-2">

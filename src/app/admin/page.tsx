@@ -47,7 +47,6 @@ interface Note {
   fileType: string;
   fileName: string;
   fileSize: number;
-  viewsCount: number;
   downloadsCount: number;
   createdAt: string;
   uploaderName: string;
@@ -60,7 +59,6 @@ interface Stats {
   totalNotes: number;
   totalChats: number;
   totalDownloads: number;
-  totalViews: number;
   usersByRole: { role: string; count: number }[];
   notesBySemester: { semester: number; count: number }[];
   storageUsage: number;

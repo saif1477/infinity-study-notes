@@ -15,7 +15,6 @@ interface Note {
   fileUrl: string;
   fileType: string;
   description: string | null;
-  viewsCount: number;
   downloadsCount: number;
   createdAt: string;
   updatedAt: string;
@@ -76,12 +75,32 @@ export default function ProfilePage() {
   const handleDownload = async (note: Note) => {
     try {
       await fetch(`/api/notes/${note.id}/increment-download`, { method: "PUT" });
-      window.open(note.fileUrl, "_blank");
+      
+      // Get secure download URL
+      const res = await fetch(`/api/download/${note.id}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Failed to get download URL");
+        return;
+      }
+
+      // Open file in new tab or trigger download
+      const isInIframe = window.self !== window.top;
+      if (isInIframe) {
+        window.parent.postMessage(
+          { type: "OPEN_EXTERNAL_URL", data: { url: data.url } },
+          "*"
+        );
+      } else {
+        window.open(data.url, "_blank", "noopener,noreferrer");
+      }
       
       // Reload notes to update download count
       if (user) {
         loadUserNotes(user.id);
       }
+      toast.success("Download started");
     } catch (error) {
       toast.error("Failed to download note");
     }
