@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -69,10 +70,14 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            {userType === "student" && <GraduationCap className="h-8 w-8 text-primary" />}
-            {userType === "professor" && <UserCircle className="h-8 w-8 text-primary" />}
-            {!userType && <GraduationCap className="h-8 w-8 text-muted-foreground" />}
+          <div className="mx-auto mb-4 flex items-center justify-center">
+            <Image
+              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/ChatGPT-Image-Nov-12-2025-09_49_06-PM-1762964365045.png"
+              alt="Infinity Study Notes Logo"
+              width={64}
+              height={64}
+              className="object-contain"
+            />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">
             {userType === "student" && "Student Login"}
