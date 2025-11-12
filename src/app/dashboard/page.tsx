@@ -158,7 +158,7 @@ export default function DashboardPage() {
                 Home
               </Button>
             </Link>
-            <h1 className="text-xl font-bold">GITAM Notes Hub</h1>
+            <h1 className="text-xl font-bold">Infinity Study Notes</h1>
           </div>
           <div className="flex items-center gap-4">
             {user?.role === "admin" && (
