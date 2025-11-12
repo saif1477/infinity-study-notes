@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -158,7 +159,16 @@ export default function DashboardPage() {
                 Home
               </Button>
             </Link>
-            <h1 className="text-xl font-bold">GITAM Notes Hub</h1>
+            <div className="flex items-center gap-3">
+              <Image
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/ChatGPT-Image-Nov-12-2025-09_49_06-PM-1762964365045.png"
+                alt="Infinity Study Notes Logo"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+              <h1 className="text-xl font-bold">GITAM Notes Hub</h1>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             {user?.role === "admin" && (
