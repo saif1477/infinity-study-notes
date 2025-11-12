@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "GITAM Notes Hub",
+  title: "Infinity Study Notes",
   description: "Upload, browse, and discuss course notes with your classmates",
 };
 
