@@ -260,34 +260,62 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <Home className="mr-2 h-4 w-4" />
-                Home
+        {/* Header */}
+        <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+          <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                  <Home className="mr-2 h-4 w-4" />
+                  Home
+                </Button>
+                <Button variant="ghost" size="icon" className="sm:hidden">
+                  <Home className="h-4 w-4" />
+                </Button>
+              </Link>
+              <h1 className="text-base sm:text-xl font-bold">Admin Panel</h1>
+            </div>
+
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+              <span className="text-sm text-muted-foreground">
+                {currentUser?.name} (Admin)
+              </span>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
               </Button>
-            </Link>
-            <h1 className="text-xl font-bold">Admin Panel</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                Dashboard
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="flex md:hidden items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
-            </Link>
-            <span className="text-sm text-muted-foreground">
-              {currentUser?.name} (Admin)
-            </span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+            </div>
           </div>
-        </div>
-      </header>
+
+          {/* Mobile dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-border bg-background/95 backdrop-blur px-4 py-3 space-y-2">
+              <p className="text-xs text-muted-foreground px-2">{currentUser?.name} (Admin)</p>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start">
+                  Dashboard
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-destructive" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          )}
+        </header>
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="w-full">
