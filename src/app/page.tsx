@@ -102,7 +102,7 @@ export default function Home() {
         </motion.div>
 
         <motion.div
-          className="grid w-full gap-6 sm:grid-cols-3"
+            className="grid w-full gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
