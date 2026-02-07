@@ -86,7 +86,7 @@ export default function Home() {
 
           <motion.p
             variants={itemVariants}
-            className="mt-6 max-w-2xl text-pretty text-lg text-muted-foreground leading-relaxed"
+              className="mt-4 sm:mt-6 max-w-2xl text-pretty text-base sm:text-lg text-muted-foreground leading-relaxed"
           >
             Your ultimate platform for sharing and accessing course notes. Connect with students and professors at GITAM University.
           </motion.p>
