@@ -204,13 +204,16 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-background">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Button>
+        <header className="border-b border-border bg-background">
+          <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
+            <Link href="/dashboard">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Dashboard
+              </Button>
+              <Button variant="ghost" size="icon" className="sm:hidden">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
           </Link>
           <div className="flex items-center gap-2">
             <Link href="/profile">
