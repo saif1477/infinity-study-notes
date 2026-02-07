@@ -232,7 +232,7 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-6 lg:gap-8 grid-cols-1 lg:grid-cols-2">
           {/* Note Details */}
           <div className="space-y-6">
             <div className="rounded-lg border border-border bg-card p-6">
