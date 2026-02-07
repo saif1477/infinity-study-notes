@@ -81,6 +81,7 @@ export default function AdminPage() {
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ type: "user" | "note"; id: number } | null>(null);
   const [blockTarget, setBlockTarget] = useState<{ userId: number; userName: string; isBlocked: boolean } | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
