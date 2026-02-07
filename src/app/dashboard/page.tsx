@@ -221,51 +221,95 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl shadow-lg">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-                <Home className="mr-2 h-4 w-4" />
-                Home
-              </Button>
-            </Link>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              GITAM Notes Hub
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            {user?.role === "admin" && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-                  <Shield className="mr-2 h-4 w-4" />
-                  Admin Panel
+        {/* Header */}
+        <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl shadow-lg">
+          <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="hover:bg-primary/10 hidden sm:inline-flex">
+                  <Home className="mr-2 h-4 w-4" />
+                  Home
+                </Button>
+                <Button variant="ghost" size="icon" className="hover:bg-primary/10 sm:hidden">
+                  <Home className="h-4 w-4" />
                 </Button>
               </Link>
-            )}
-            <Link href="/profile">
-              <Button variant="ghost" size="icon" title="My Profile" className="hover:bg-primary/10">
-                <User className="h-5 w-5" />
+              <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                GITAM Notes Hub
+              </h1>
+            </div>
+
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-3">
+              <ThemeToggle />
+              {user?.role === "admin" && (
+                <Link href="/admin">
+                  <Button variant="ghost" size="sm" className="hover:bg-primary/10">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin Panel
+                  </Button>
+                </Link>
+              )}
+              <Link href="/profile">
+                <Button variant="ghost" size="icon" title="My Profile" className="hover:bg-primary/10">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+              <span className="text-sm text-muted-foreground hidden lg:inline">
+                {user?.name} ({user?.role})
+              </span>
+              <Link href="/upload">
+                <Button size="sm" variant="gradient">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Notes
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
               </Button>
-            </Link>
-            <span className="text-sm text-muted-foreground hidden sm:inline">
-              {user?.name} ({user?.role})
-            </span>
-            <Link href="/upload">
-              <Button size="sm" variant="gradient">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Notes
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="flex md:hidden items-center gap-2">
+              <ThemeToggle />
+              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
-            </Link>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+            </div>
           </div>
-        </div>
-      </header>
+
+          {/* Mobile dropdown menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-2">
+              <p className="text-xs text-muted-foreground px-2">{user?.name} ({user?.role})</p>
+              {user?.role === "admin" && (
+                <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-primary/10">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin Panel
+                  </Button>
+                </Link>
+              )}
+              <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-primary/10">
+                  <User className="mr-2 h-4 w-4" />
+                  My Profile
+                </Button>
+              </Link>
+              <Link href="/upload" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-primary/10">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Notes
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-destructive hover:bg-destructive/10" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          )}
+        </header>
 
       <main className="container mx-auto px-4 py-8">
         {/* Filters */}
