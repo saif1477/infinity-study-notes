@@ -126,45 +126,86 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <Home className="mr-2 h-4 w-4" />
-                Home
-              </Button>
-            </Link>
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                Dashboard
-              </Button>
-            </Link>
-            <h1 className="text-xl font-bold">My Profile</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            {user?.role === "admin" && (
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  <Shield className="mr-2 h-4 w-4" />
-                  Admin Panel
+        {/* Header */}
+        <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+          <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                  <Home className="mr-2 h-4 w-4" />
+                  Home
+                </Button>
+                <Button variant="ghost" size="icon" className="sm:hidden">
+                  <Home className="h-4 w-4" />
                 </Button>
               </Link>
-            )}
-            <Link href="/upload">
-              <Button size="sm">
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Notes
+              <Link href="/dashboard" className="hidden sm:inline-flex">
+                <Button variant="ghost" size="sm">
+                  Dashboard
+                </Button>
+              </Link>
+              <h1 className="text-base sm:text-xl font-bold">My Profile</h1>
+            </div>
+
+            {/* Desktop nav */}
+            <div className="hidden md:flex items-center gap-4">
+              {user?.role === "admin" && (
+                <Link href="/admin">
+                  <Button variant="ghost" size="sm">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin Panel
+                  </Button>
+                </Link>
+              )}
+              <Link href="/upload">
+                <Button size="sm">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Notes
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
               </Button>
-            </Link>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="flex md:hidden items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
-        </div>
-      </header>
+
+          {/* Mobile dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-border bg-background/95 backdrop-blur px-4 py-3 space-y-2">
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start">
+                  Dashboard
+                </Button>
+              </Link>
+              {user?.role === "admin" && (
+                <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" size="sm" className="w-full justify-start">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin Panel
+                  </Button>
+                </Link>
+              )}
+              <Link href="/upload" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" size="sm" className="w-full justify-start">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Notes
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-destructive" onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+          )}
+        </header>
 
       <main className="container mx-auto px-4 py-8">
         {/* User Info Card */}
