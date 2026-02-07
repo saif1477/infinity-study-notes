@@ -79,7 +79,7 @@ export default function Home() {
 
           <motion.h1
             variants={itemVariants}
-            className="text-balance text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent animate-gradient"
+              className="text-balance text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary via-primary/90 to-accent bg-clip-text text-transparent animate-gradient"
           >
             Infinity Study Notes
           </motion.h1>
