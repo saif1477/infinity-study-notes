@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { FileText, Download, Home, LogOut, Upload, Calendar, User as UserIcon, Shield } from "lucide-react";
+import { FileText, Download, Home, LogOut, Upload, Calendar, User as UserIcon, Shield, Menu, X } from "lucide-react";
 
 interface Note {
   id: number;
