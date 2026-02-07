@@ -32,6 +32,7 @@ export default function ProfilePage() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Check authentication
