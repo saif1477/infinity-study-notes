@@ -209,10 +209,10 @@ export default function ProfilePage() {
 
       <main className="container mx-auto px-4 py-8">
         {/* User Info Card */}
-        <div className="mb-8 rounded-lg border border-border bg-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-secondary">
-              <UserIcon className="h-8 w-8" />
+        <div className="mb-8 rounded-lg border border-border bg-card p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-secondary shrink-0">
+                <UserIcon className="h-6 w-6 sm:h-8 sm:w-8" />
             </div>
             <div>
               <h2 className="text-2xl font-bold">{user?.name}</h2>
