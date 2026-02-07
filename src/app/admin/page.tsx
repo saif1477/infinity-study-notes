@@ -321,16 +321,16 @@ export default function AdminPage() {
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-3 max-w-md">
             <TabsTrigger value="overview">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Overview
+              <BarChart3 className="mr-1 sm:mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
             <TabsTrigger value="users">
-              <Users className="mr-2 h-4 w-4" />
-              Users
+              <Users className="mr-1 sm:mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Users</span>
             </TabsTrigger>
             <TabsTrigger value="notes">
-              <FileText className="mr-2 h-4 w-4" />
-              Notes
+              <FileText className="mr-1 sm:mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Notes</span>
             </TabsTrigger>
           </TabsList>
 
