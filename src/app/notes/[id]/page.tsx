@@ -261,7 +261,7 @@ export default function NotePage({ params }: { params: Promise<{ id: string }> }
           </div>
 
           {/* Chat Section */}
-          <div className="rounded-lg border border-border bg-card flex flex-col h-[600px]">
+            <div className="rounded-lg border border-border bg-card flex flex-col h-[400px] sm:h-[500px] lg:h-[600px]">
             <div className="border-b border-border p-4">
               <h2 className="text-lg font-semibold">Discussion</h2>
               <p className="text-sm text-muted-foreground">Chat with others about this note</p>
