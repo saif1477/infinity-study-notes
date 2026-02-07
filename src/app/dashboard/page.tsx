@@ -319,7 +319,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.5 }}
           className="mb-8 space-y-4"
         >
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Browse Notes
           </h2>
           <div className="flex flex-col gap-4 sm:flex-row">
