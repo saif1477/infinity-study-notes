@@ -6,10 +6,11 @@ import { generateDownloadUrl } from '@/lib/supabase-storage';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const noteId = parseInt(params.id);
+    const { id } = await params;
+    const noteId = parseInt(id);
     
     // Get note from database
     const [note] = await db.select().from(notes).where(eq(notes.id, noteId));
