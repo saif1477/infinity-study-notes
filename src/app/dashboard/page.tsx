@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
-import { FileText, Download, MessageSquare, Upload, LogOut, Search, Home, User, Shield } from "lucide-react";
+import { FileText, Download, MessageSquare, Upload, LogOut, Search, Home, User, Shield, Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Note {
