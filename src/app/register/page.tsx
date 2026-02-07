@@ -116,26 +116,6 @@ export default function RegisterPage() {
               ? "Connect with fellow students and access thousands of study materials"
               : "Share your expertise and help students excel in their academic journey"}
           </motion.p>
-
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="mt-12 grid grid-cols-3 gap-8 text-center"
-          >
-            <div>
-              <div className="text-3xl font-bold mb-1">1000+</div>
-              <div className="text-sm text-white/80">Notes Shared</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-1">500+</div>
-              <div className="text-sm text-white/80">Active Users</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-1">8</div>
-              <div className="text-sm text-white/80">Semesters</div>
-            </div>
-          </motion.div>
         </div>
       </motion.div>
 
