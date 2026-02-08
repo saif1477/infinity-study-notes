@@ -410,8 +410,16 @@ export default function DashboardPage() {
 
                 {/* Uploader Info */}
                 <div className="mb-3 flex items-center gap-2 text-xs">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <User className="h-3 w-3" />
+                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                    {note.uploaderProfileImage ? (
+                      <img
+                        src={note.uploaderProfileImage}
+                        alt={note.uploaderName}
+                        className="h-5 w-5 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-3 w-3" />
+                    )}
                     <span>{note.uploaderName}</span>
                   </div>
                   <span className="rounded-full bg-accent/10 border border-accent/20 px-2 py-0.5 text-xs capitalize text-accent">
