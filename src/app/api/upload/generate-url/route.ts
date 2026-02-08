@@ -72,7 +72,6 @@ export async function POST(req: NextRequest) {
       fileName: file.name,
       fileSize: file.size,
       description: description || null,
-      viewsCount: 0,
       downloadsCount: 0,
       createdAt: now,
       updatedAt: now,
