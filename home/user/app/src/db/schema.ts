@@ -32,11 +32,11 @@ export const notes = sqliteTable('notes', {
 });
 
 // Track which users downloaded which notes
-export const downloads = sqliteTable('downloads', {
+export const downloads = sqliteTable('user_downloads', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   noteId: integer('note_id').notNull().references(() => notes.id, { onDelete: 'cascade' }),
-  downloadedAt: text('downloaded_at').notNull(),
+  downloadedAt: text('created_at').notNull(),
 });
 
 // Update chats table - add ON DELETE CASCADE for both noteId and senderId foreign keys
