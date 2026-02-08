@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { notes } from '@/db/schema';
+import { notes, downloads } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
 export async function PUT(
@@ -44,6 +44,20 @@ export async function PUT(
       })
       .where(eq(notes.id, noteId))
       .returning();
+
+    // Track the download if userId is provided
+    try {
+      const body = await request.json().catch(() => null);
+      if (body?.userId) {
+        await db.insert(downloads).values({
+          userId: parseInt(body.userId),
+          noteId,
+          downloadedAt: new Date().toISOString(),
+        });
+      }
+    } catch {
+      // Non-critical: don't fail the request if tracking fails
+    }
 
     if (updatedNote.length === 0) {
       return NextResponse.json(
