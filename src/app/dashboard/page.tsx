@@ -333,12 +333,22 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
               )}
-              <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-primary/10">
-                  <User className="mr-2 h-4 w-4" />
-                  My Profile
-                </Button>
-              </Link>
+                <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-primary/10">
+                    {user?.profileImage ? (
+                      <Image
+                        src={user.profileImage}
+                        alt={user.name || ""}
+                        width={16}
+                        height={16}
+                        className="mr-2 rounded-full object-cover w-4 h-4"
+                      />
+                    ) : (
+                      <User className="mr-2 h-4 w-4" />
+                    )}
+                    My Profile
+                  </Button>
+                </Link>
               <Link href="/upload" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-primary/10">
                   <Upload className="mr-2 h-4 w-4" />
