@@ -27,6 +27,7 @@ interface Note {
   createdAt: string;
   uploaderName: string;
   uploaderRole: string;
+  uploaderProfileImage: string | null;
 }
 
 interface User {
