@@ -107,8 +107,12 @@ export default function DashboardPage() {
 
   const handleDownload = async (note: Note) => {
     try {
-      // Increment download count first
-      await fetch(`/api/notes/${note.id}/increment-download`, { method: "PUT" });
+      // Increment download count first, tracking user
+      await fetch(`/api/notes/${note.id}/increment-download`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id }),
+      });
 
       // Get secure download URL
       const res = await fetch(`/api/download/${note.id}`);
