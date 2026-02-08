@@ -271,11 +271,21 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
               )}
-              <Link href="/profile">
-                <Button variant="ghost" size="icon" title="My Profile" className="hover:bg-primary/10">
-                  <User className="h-5 w-5" />
-                </Button>
-              </Link>
+                <Link href="/profile">
+                  {user?.profileImage ? (
+                    <Image
+                      src={user.profileImage}
+                      alt={user.name}
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover w-8 h-8 border-2 border-primary/30 hover:border-primary transition-colors cursor-pointer"
+                    />
+                  ) : (
+                    <Button variant="ghost" size="icon" title="My Profile" className="hover:bg-primary/10">
+                      <User className="h-5 w-5" />
+                    </Button>
+                  )}
+                </Link>
               <span className="text-sm text-muted-foreground hidden lg:inline">
                 {user?.name} ({user?.role})
               </span>
