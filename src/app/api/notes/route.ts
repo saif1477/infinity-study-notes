@@ -263,7 +263,8 @@ export async function GET(request: NextRequest) {
       updatedAt: notes.updatedAt,
       userId: notes.userId,
       uploaderName: users.name,
-      uploaderRole: users.role
+      uploaderRole: users.role,
+      uploaderProfileImage: users.profileImage,
     })
     .from(notes)
     .leftJoin(users, eq(notes.userId, users.id));
