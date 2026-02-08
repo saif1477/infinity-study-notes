@@ -7,6 +7,7 @@ export const users = sqliteTable('users', {
   passwordHash: text('password_hash').notNull(),
   name: text('name').notNull(),
   role: text('role').notNull(), // 'student' or 'professor'
+  profileImage: text('profile_image'), // URL to profile image in Supabase storage
   isBlocked: integer('is_blocked', { mode: 'boolean' }).notNull().default(false),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
