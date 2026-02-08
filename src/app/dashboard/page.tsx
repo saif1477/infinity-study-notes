@@ -58,9 +58,23 @@ export default function DashboardPage() {
       return;
     }
 
-    setUser(JSON.parse(userStr));
-    loadNotes();
-  }, [router]);
+      const parsedUser = JSON.parse(userStr);
+      setUser(parsedUser);
+      loadNotes();
+
+      // Fetch fresh user data to get latest profileImage
+      fetch("/api/auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => {
+          if (data) {
+            setUser(data);
+            localStorage.setItem("user", JSON.stringify(data));
+          }
+        })
+        .catch(() => {});
+    }, [router]);
 
   const loadNotes = async () => {
     try {
