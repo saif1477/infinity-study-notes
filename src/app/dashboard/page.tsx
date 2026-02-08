@@ -313,7 +313,18 @@ export default function DashboardPage() {
           {/* Mobile dropdown menu */}
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl px-4 py-3 space-y-2">
-              <p className="text-xs text-muted-foreground px-2">{user?.name} ({user?.role})</p>
+                <p className="text-xs text-muted-foreground px-2 flex items-center gap-2">
+                  {user?.profileImage && (
+                    <Image
+                      src={user.profileImage}
+                      alt={user.name || ""}
+                      width={20}
+                      height={20}
+                      className="rounded-full object-cover w-5 h-5"
+                    />
+                  )}
+                  {user?.name} ({user?.role})
+                </p>
               {user?.role === "admin" && (
                 <Link href="/admin" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="ghost" size="sm" className="w-full justify-start hover:bg-primary/10">
