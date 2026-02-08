@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { notes, users } from '@/db/schema';
+import { notes } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const userId = parseInt(params.userId);
+    const { userId: userIdParam } = await params;
+    const userId = parseInt(userIdParam);
 
     if (isNaN(userId)) {
       return NextResponse.json(
@@ -27,7 +28,6 @@ export async function GET(
         fileUrl: notes.fileUrl,
         fileType: notes.fileType,
         description: notes.description,
-        viewsCount: notes.viewsCount,
         downloadsCount: notes.downloadsCount,
         createdAt: notes.createdAt,
         updatedAt: notes.updatedAt,
