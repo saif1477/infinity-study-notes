@@ -116,24 +116,51 @@ export default function UploadPage() {
 
       const userData = await userRes.json();
 
-      const uploadFormData = new FormData();
-      uploadFormData.append("file", file);
-      uploadFormData.append("title", formData.title);
-      uploadFormData.append("subjectName", formData.subjectName);
-      uploadFormData.append("semester", formData.semester);
-      uploadFormData.append("description", formData.description);
-      uploadFormData.append("userId", userData.id.toString());
-
-      const uploadRes = await fetch("/api/upload/generate-url", {
+      // Step 1: Get signed upload URL from server (no file in body)
+      const urlRes = await fetch("/api/upload/generate-url", {
         method: "POST",
-        body: uploadFormData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+          userId: userData.id,
+        }),
       });
 
-      const uploadData = await uploadRes.json();
+      const urlData = await urlRes.json();
+      if (!urlRes.ok) throw new Error(urlData.error || "Failed to get upload URL");
 
-      if (!uploadRes.ok) {
-        throw new Error(uploadData.error || "Upload failed");
-      }
+      const { signedUrl, fileKey } = urlData;
+
+      // Step 2: Upload file directly to Supabase (bypasses Next.js body size limit)
+      const uploadRes = await fetch(signedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (!uploadRes.ok) throw new Error("Failed to upload file to storage");
+
+      // Step 3: Save note metadata to database
+      const saveRes = await fetch("/api/upload/generate-url", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userData.id,
+          title: formData.title,
+          subjectName: formData.subjectName,
+          semester: formData.semester,
+          description: formData.description,
+          fileKey,
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+        }),
+      });
+
+      const saveData = await saveRes.json();
+      if (!saveRes.ok) throw new Error(saveData.error || "Failed to save note");
 
       toast.success("Note uploaded successfully!");
       router.push("/dashboard");

@@ -3,87 +3,82 @@ import { db } from '@/db';
 import { notes } from '@/db/schema';
 import { supabase } from '@/lib/supabase-storage';
 
+// Step 1: Generate a signed upload URL (no file in body)
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const file = formData.get('file') as File;
-    const title = formData.get('title') as string;
-    const subjectName = formData.get('subjectName') as string;
-    const semester = parseInt(formData.get('semester') as string);
-    const description = formData.get('description') as string;
-    const userId = parseInt(formData.get('userId') as string);
+    const body = await req.json();
+    const { fileName, fileType, fileSize, userId } = body;
 
-    if (!file || !title || !subjectName || !semester || !userId) {
+    if (!fileName || !fileType || !userId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Validate file type
-    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'];
-    if (!allowedTypes.includes(file.type)) {
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+    ];
+    if (!allowedTypes.includes(fileType)) {
       return NextResponse.json({ error: 'Invalid file type. Only PDF and DOCX files are allowed.' }, { status: 400 });
     }
 
-    // Validate file size (100MB max)
-    const maxSize = 100 * 1024 * 1024;
-    if (file.size > maxSize) {
+    if (fileSize > 100 * 1024 * 1024) {
       return NextResponse.json({ error: 'File size exceeds 100MB limit' }, { status: 400 });
     }
 
-    // Generate unique file key with timestamp
     const timestamp = Date.now();
-    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '-');
     const fileKey = `notes/${userId}/${timestamp}-${sanitizedFileName}`;
 
-    // Upload directly to Supabase storage
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data, error } = await supabase.storage
       .from('notes')
-      .upload(fileKey, buffer, {
-        contentType: file.type,
-        upsert: false,
-      });
+      .createSignedUploadUrl(fileKey);
 
-    if (uploadError) {
-      console.error('Supabase upload error:', uploadError);
-      return NextResponse.json({ 
-        error: uploadError.message || 'Failed to upload file to storage' 
-      }, { status: 500 });
+    if (error || !data) {
+      console.error('Signed URL error:', error);
+      return NextResponse.json({ error: 'Failed to generate upload URL' }, { status: 500 });
     }
 
-    // Get public URL for the uploaded file
-    const { data: urlData } = supabase.storage
-      .from('notes')
-      .getPublicUrl(fileKey);
+    return NextResponse.json({ signedUrl: data.signedUrl, fileKey, token: data.token });
+  } catch (error: any) {
+    console.error('Generate URL error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to generate upload URL' }, { status: 500 });
+  }
+}
 
+// Step 2: Save note metadata to DB after client uploads to Supabase
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { userId, title, subjectName, semester, description, fileKey, fileName, fileType, fileSize } = body;
+
+    if (!userId || !title || !subjectName || !semester || !fileKey) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const { data: urlData } = supabase.storage.from('notes').getPublicUrl(fileKey);
     const fileUrl = urlData.publicUrl;
 
-    // Save to database
     const now = new Date().toISOString();
     const [note] = await db.insert(notes).values({
-      userId,
+      userId: parseInt(userId),
       title,
       subjectName,
-      semester,
+      semester: parseInt(semester),
       fileUrl,
-      fileType: file.type,
+      fileType,
       fileKey,
-      fileName: file.name,
-      fileSize: file.size,
+      fileName,
+      fileSize: parseInt(fileSize),
       description: description || null,
       downloadsCount: 0,
       createdAt: now,
       updatedAt: now,
     }).returning();
 
-    return NextResponse.json({ 
-      success: true, 
-      note,
-      message: 'File uploaded successfully'
-    });
+    return NextResponse.json({ success: true, note });
   } catch (error: any) {
-    console.error('Upload error:', error);
-    return NextResponse.json({ error: error.message || 'Upload failed' }, { status: 500 });
+    console.error('Save note error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to save note' }, { status: 500 });
   }
 }
