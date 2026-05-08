@@ -1,77 +1,46 @@
 # Infinity Study Notes 🎓
 
-Infinity Study Notes is a modern, collaborative digital library and learning platform specifically tailored for students and professors at **GITAM University**. The platform provides a centralized, organized way to share course materials, discuss topics in real-time, and track academic resources.
+Infinity Study Notes is a modern, collaborative digital library and learning platform tailored specifically for students and professors at **GITAM University**. 
 
-## 🚀 Features
+The platform provides a centralized, beautifully designed space to organize course materials, foster academic discussions in real-time, and securely manage educational resources.
 
-- **Centralized Notes Hub:** Browse, filter, and download course notes structured cleanly by subject and semester (1-8).
-- **Seamless Uploads:** Easily upload class materials (PDF, DOCX) along with rich metadata and descriptions.
-- **Real-Time Collaboration:** Every note includes a dedicated live chat room where students and professors can discuss the content.
-- **Role-Based Access Control:** Differentiated roles for Students, Professors, and Administrators to ensure platform integrity and quality.
-- **Resource Analytics:** Tracks view counts, downloads, and file sizes to help students discover the most helpful resources.
-- **Dynamic & Responsive UI:** Built with Framer Motion and Tailwind CSS for a premium, buttery-smooth user experience.
+## ✨ Highlights & Key Features
 
-## 🛠️ Tech Stack
+- **Centralized Notes Hub**
+  A cleanly structured repository allowing students to browse, filter, and download course notes by subject and semester (1-8). Finding the right study material has never been easier.
+
+- **Seamless Resource Sharing**
+  Effortless upload flows for class materials (PDF, DOCX) accompanied by rich metadata, descriptions, and tagging to maintain high content quality.
+
+- **Real-Time Collaboration**
+  Every uploaded note includes a dedicated live chat room. Students and professors can ask questions, discuss complex topics, and collaborate directly alongside the material.
+
+- **Role-Based Ecosystem**
+  Differentiated access levels for Students, Professors, and Administrators. This ensures platform integrity, proper content moderation, and a secure environment for all users.
+
+- **Analytics & Tracking**
+  Built-in resource tracking measures view counts, total downloads, and file sizes. This helps highlight the most popular and helpful resources for the community.
+
+- **Premium User Experience**
+  Designed with an emphasis on aesthetics and usability. The interface features a dynamic gradient mesh, micro-animations, and a highly responsive layout for a buttery-smooth experience across all devices.
+
+## 🛠️ Technology Stack
+
+This project is built using a modern, performance-oriented web stack:
 
 - **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS, Framer Motion, Radix UI
-- **Database:** PostgreSQL via [Supabase](https://supabase.com/)
+- **Database:** PostgreSQL (via Supabase)
 - **ORM:** [Drizzle ORM](https://orm.drizzle.team/)
 - **Authentication:** [Better Auth](https://better-auth.com/)
-- **Deployment:** Vercel
+- **Deployment Architecture:** Vercel
 
-## 📦 Getting Started
+## 📁 Core Architecture
+- `/src/app` - Next.js App Router for all core routing (Dashboard, Notes, Auth, Admin).
+- `/src/components` - Highly reusable, styled UI components.
+- `/src/db` - Database schema definitions managed entirely through Drizzle.
+- `/public` - Static assets and global styling tokens.
 
-### Prerequisites
-- Node.js 18+ and `npm` installed.
-- A [Supabase](https://supabase.com/) account for the Postgres database.
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/saif1477/infinity-study-notes.git
-cd infinity-study-notes
-```
-
-### 2. Install Dependencies
-We strictly use `npm` as the package manager.
-```bash
-npm install
-```
-
-### 3. Setup Environment Variables
-Create a `.env` or `.env.local` file in the root directory and add the following keys. *(Check `SUPABASE_STORAGE_SETUP.md` and `ADMIN_SETUP.md` for extended configurations)*.
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-DATABASE_URL=your_postgresql_database_url
-```
-
-### 4. Database Migrations
-Ensure your local or remote Supabase database matches the Drizzle schema.
-
-```bash
-npx drizzle-kit generate
-npx drizzle-kit push
-```
-
-### 5. Run the Development Server
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
-
-## 📁 Repository Structure
-- `/src/app` - Next.js App Router containing pages (login, register, notes, dashboard, admin, etc.)
-- `/src/components` - Reusable UI components.
-- `/src/db` - Database schema definitions (`schema.ts`).
-- `/public` - Static assets and global styles.
-
-## 🤝 Contributing
-Contributions are welcome! If you're a GITAM student and want to improve the platform, feel free to submit a Pull Request or open an Issue.
-
-## 📄 License
-This project is for educational and community use.
+---
+*Developed for the GITAM University community.*
